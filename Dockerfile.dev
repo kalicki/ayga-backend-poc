@@ -1,0 +1,24 @@
+FROM ruby:2.5-alpine
+LABEL maintainer="Filipe Kalicki <filipe.kalicki@gmail.com>"
+
+RUN apt-get update -qq && apt-get install -y build-essential
+
+# Variables
+ARG BACKEND='/ayga-backend'
+ARG PORT=2300
+
+# Create directory & set working
+RUN mkdir $BACKEND
+WORKDIR $BACKEND
+
+# Copy local machine to container
+ADD Gemfile* $BACKEND/
+
+# Install dependencies
+RUN bundle install --without development production
+
+# Add everything from current directory to directory in container
+ADD . $BACKEND
+
+EXPOSE $PORT
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"] 

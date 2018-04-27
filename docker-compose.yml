@@ -1,0 +1,28 @@
+# Author: Filipe Kalicki
+version: '3'
+services:
+  # Database with PostgresSQL
+  postgres:
+    image: postgres
+    container_name: ayga_postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Mount a persistable volume
+    env_file:
+      - .env.production
+
+  # Backend with Hanami but as similar a https://docs.docker.com/compose/rails/#define-the-project
+  backend: &app_base
+    build: .
+    container_name: ayga_api
+    command: bundle exec puma -C 'config/puma.rb'
+    volumes:
+      - .:/backend # Mount app into container
+    ports:
+      - "2300:2300"
+    depends_on:
+      - postgres
+    links:
+      - postgres
+
+volumes:
+  postgres_data:
