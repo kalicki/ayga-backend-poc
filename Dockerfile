@@ -12,7 +12,7 @@ WORKDIR $BACKEND
 # Copy local machine to container
 ADD Gemfile* $BACKEND/
 
-# Install dependencies
+# Install dependencies only for production
 RUN bundle install --jobs 20 --retry 5 --without development test
 
 # Add everything from current directory to directory in container

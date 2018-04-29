@@ -15,10 +15,9 @@ WORKDIR $BACKEND
 ADD Gemfile* $BACKEND/
 
 # Install dependencies
-RUN bundle install --without development production
+RUN bundle install
 
 # Add everything from current directory to directory in container
 ADD . $BACKEND
 
 EXPOSE $PORT
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"] 
