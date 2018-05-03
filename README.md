@@ -64,3 +64,5 @@ Explore Hanami [guides](http://hanamirb.org/guides/), [API docs](http://docs.han
 
 Adicionado Puma server para produção
 Habilitado http2/early hits
+
+`bundle exec hanami server --server=webrick` dev

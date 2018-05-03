@@ -4,6 +4,9 @@ require 'hanami/model'
 require_relative '../lib/backend'
 require_relative '../apps/api/application'
 
+# Extas requires
+require 'argon2'
+
 Hanami.configure do
   mount Api::Application, at: '/'
 

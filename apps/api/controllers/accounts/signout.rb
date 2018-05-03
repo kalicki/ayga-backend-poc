@@ -1,5 +1,5 @@
-module Api::Controllers::Users
-  class Index
+module Api::Controllers::Accounts
+  class Signout
     include Api::Action
 
     def call(params)

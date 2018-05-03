@@ -3,9 +3,13 @@ source 'https://rubygems.org'
 gem 'rake'
 gem 'hanami',       '~> 1.2'
 gem 'hanami-model', '~> 1.2'
+gem 'hanami-pagination'
 
 # Postgresql
 gem 'pg'
+
+# Crypt
+gem 'argon2'
 
 group :development do
   # Code reloading
