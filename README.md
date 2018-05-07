@@ -48,12 +48,13 @@ Explore Hanami [guides](http://hanamirb.org/guides/), [API docs](http://docs.han
 
 # To-do
 ## BACKEND
-| | API com autenteticação dos endpoints por TOKEN
+|x| API com autenteticação dos endpoints por TOKEN
 | | Disponibilizar a listagem de todos os vídeos
+- Extra: Paginação ?page=2
 | | Busca por palavras ou tags
 
 | | Interface web
-| | CRUD :: Titulo, descrição curtam, imagem de pré visualização, URL do youtube
+|X| CRUD :: Titulo, descrição curtam, imagem de pré visualização, URL do youtube
 
 | | Adicionar Docker
 | | Hasura

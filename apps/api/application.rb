@@ -1,5 +1,6 @@
 require 'hanami/helpers'
 require 'hanami/assets'
+require_relative './controllers/authentication'
 
 module Api
   class Application < Hanami::Application
@@ -26,7 +27,7 @@ module Api
       # Defaults to true.
       # See: http://www.rubydoc.info/gems/hanami-controller/#Exceptions_management
       #
-      # handle_exceptions true
+      # handle_exceptions false
 
       ##
       # HTTP
@@ -260,33 +261,34 @@ module Api
       controller.prepare do
         # include MyAuthentication # included in all the actions
         # before :authenticate!    # run an authentication before callback
+        include Api::Authentication
       end
 
       # Configure the code that will yield each time Api::View is included
       # This is useful for sharing common functionality
       #
       # See: http://www.rubydoc.info/gems/hanami-view#Configuration
-      view.prepare do
-        include Hanami::Helpers
-        include Api::Assets::Helpers
-      end
+      #view.prepare do
+      #  include Hanami::Helpers
+      #  include Api::Assets::Helpers
+      #end
     end
 
     ##
     # DEVELOPMENT
     #
-    # configure :development do
-    #  # Don't handle exceptions, render the stack trace
-    #  handle_exceptions false
-    # end
+    configure :development do
+      # Don't handle exceptions, render the stack trace
+      handle_exceptions false
+    end
 
     ##
     # TEST
     #
-    # configure :test do
-    #  # Don't handle exceptions, render the stack trace
-    #  handle_exceptions false
-    # end
+    configure :test do
+      # Don't handle exceptions, render the stack trace
+      handle_exceptions false
+    end
 
     ##
     # PRODUCTION

@@ -8,8 +8,9 @@ gem 'hanami-pagination'
 # Postgresql
 gem 'pg'
 
-# Crypt
+# Security
 gem 'argon2'
+gem 'jwt'
 
 group :development do
   # Code reloading

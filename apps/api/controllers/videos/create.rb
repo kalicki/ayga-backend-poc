@@ -3,7 +3,7 @@ module Api::Controllers::Videos
     include Api::Action
 
     params do
-      required(:user_id).filled(:str?, format?: FormatsRegex.uuid)
+      # required(:user_id).filled(:str?, format?: FormatsRegex.uuid)
       required(:title).filled(:str?)
       required(:description).filled(:str?)
       required(:thumbnail).filled(:str?)
@@ -15,30 +15,36 @@ module Api::Controllers::Videos
     def call(params)
       # Error based in params
       unless params.valid?
-        self.status = 422
-        return self.body = {
+        halt 422, {
           success: false,
           status_message: params.errors.to_hash
         }.to_json
       end
 
       # Create object user for check if is admin
-      user = UserRepository.new.find_by_id(params[:user_id])
-      unless user.admin?
-        self.status = 401
-        return self.body = {
+      user = current_user
+      unless user && user.admin?
+        halt 401, {
           success: false,
-          status_message: 'Dont have permission'
+          status_message: 'Dont have permission for add video'
         }.to_json
       end
 
-      # Create object Video
+      # Object Video
       repository = VideoRepository.new
-      # Create new video
-      video = repository.create(params)
+      # Create persistence video
+      video = repository.create(
+        user_id: user.id,
+        title: params[:title],
+        description: params[:description],
+        thumbnail: params[:thumbnail],
+        url_video: params[:url_video],
+        tags: params[:tags],
+        visible: params[:visible]
+      )
 
-      self.status = 201
-      self.body = {
+      # Return object JSON
+      status 201, {
         success: true,
         status_message: 'Added video',
         data: video.to_hash

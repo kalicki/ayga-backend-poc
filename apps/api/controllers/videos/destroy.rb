@@ -9,8 +9,7 @@ module Api::Controllers::Videos
     def call(params)
       # Error based in params
       unless params.valid?
-        self.status = 422
-        return self.body = {
+        halt 422, {
           success: false,
           status_message: params.errors
         }.to_json
@@ -21,8 +20,7 @@ module Api::Controllers::Videos
 
       # Check user exists by id
       if repository.video_exists?(params[:id])
-        self.status = 404
-        return self.body = {
+        halt 404, {
           success: false,
           status_message: 'Video do not exists'
         }.to_json
@@ -30,8 +28,7 @@ module Api::Controllers::Videos
 
       # Remove user
       repository.delete(params[:id])
-      self.status = 200
-      self.body = {
+      status 200, {
         success: true,
         status_message: 'Video removed'
       }.to_json

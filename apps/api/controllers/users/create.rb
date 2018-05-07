@@ -1,6 +1,7 @@
 module Api::Controllers::Users
   class Create
     include Api::Action
+    include Api::Authentication::Skip
 
     params do
       required(:first_name).filled(:str?)
