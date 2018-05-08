@@ -5,7 +5,6 @@
 *.swp
 capybara-*.html
 .rspec
-Gemfile.lock
 /log
 /tmp
 /.config
