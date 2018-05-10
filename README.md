@@ -1,69 +1,129 @@
-# .
+Este projeto está escrito em Ruby com uso do framework Hanami. Abaixo tem algumas informações importantes para o entendimento básico do projeto:
 
-Welcome to your new Hanami project!
+# Caracteristicas:
+Ruby >= 2.5
+Hanami = 1.2
+PostgreSQL
+Argon2
+JWT
 
-## Setup
+# Arquitetura
+Hanami é baseado em uma arquitetura "Clean" e Monolith First, porém, este projeto foi segmento para escalar de modo fácil usando a técnica da "Umbrella" (escalar sem precisar de microserviços) ou "Container", ou seja, cada evento - create, delete, e outros - está isolado, em caso de necessidade de escalomento é só desacoplar o evento que tem maior demanda e separar em um serviço.
 
-How to run tests:
+Organizações das pastas:
+`apps` - Está toda manipulação de roteamento e controle, neste caso, somente a API está habilitado.
+`config` - Configurações gerais da aplicação, porém, é composta de forma global para qualquer aplicação que esteja em `apps`
+`db` - Contém os migratios e estruturação do DB
+`lib` - É composta por toda estrturação e manipulação entre entidade (Entity) e o dados (Repository)
+    `repositories` - Manipula as informações de DB e controlar
+    `entities` - Informações da entidade, ou seja, é possível fazer restrição de tipagem, gets, sets e outras coisas ligado a classe.
+    * Importante: O Hanami já faz alguns tratamento na entidade de forma automática, baseado na informações do DB.
 
-```
-% bundle exec rake
-```
+Para mais informações: hanamirb.org/guides/1.2/architecture/overview/
 
-How to run the development console:
+# Endpoints
+POST /sing_up
+Parâmetros:
+    - first_name => string
+    - last_name => string
+    - email => string
+    - encrypted_password => string
+    - encrypted_password_confirmation => string
+    - admin => bool (defautl: false)
+Descrição: Cria um novo usuário baseado nas informações de parâmetros.
+Retorno: JSON com dados do usuário (sem a senha).
 
-```
-% bundle exec hanami console
-```
+POST /sing_in
+Parâmetros:
+    - email => string
+    - password => string
+Descrição: Efetua o login.
+Retorno: JSON com Token para uso em JWT
 
-How to run the development server:
+DELETE /users/:id
+Parâmetros:
+    - id => uuid
+Descrição: Remove um usuário baseado no ID
+Retorno: JSON com mensagem de sucesso ou negativo.
 
-```
-% bundle exec hanami server
-```
+GET /videos
+Descrição: Mostra todos os vídeos visiveis.
+Retorno: JSON com vídeos e opções de paginaçõ.
 
-How to prepare (create and migrate) DB for `development` and `test` environments:
+GET /videos/:id
+Parâmetros:
+    - id => uuid
+Descrição: Retorna o vídeo solitado por ID.
+Retorno: JSON com informações do vídeo.
 
-```
-% bundle exec hanami db prepare
+POST /videos
+Parâmetros:
+    - title => string
+    - thumbnail => string
+    - url_video => string
+    - tags => Array string
+    - visible => bool (default: true)
+Descrição: Cria um novo vídeo baseado nos parâmetros.
+Retorno: JSON com informações do vídeo criado.
 
-% HANAMI_ENV=test bundle exec hanami db prepare
-```
+PATCH /videos/:id
+Parâmetros:
+    - title => string
+    - thumbnail => string
+    - url_video => string
+    - tags => Array string
+    - visible => bool (default: true)
+Descrição: Atualiza vídeo de um ID solicitate, baseado nos parâmetros.
+Retorno: JSON com informações do vídeo atualizado.
 
-Explore Hanami [guides](http://hanamirb.org/guides/), [API docs](http://docs.hanamirb.org/1.2.0/), or jump in [chat](http://chat.hanamirb.org) for help. Enjoy! 🌸
+DELETE /videos/:id
+Parâmetros:
+    - id => uuid
+Descrição: Remove um vídeo baseado no ID solicitante.
+Retorno: JSON com mensagem.
 
-# Docker para ambiente de dev
-`docker build -f Dockerfile.dev .` para construir 
-`docker-compose up` para habilitar
-`docker-compose down` stop e remove
+GET /videos/search
+Parâmetros:
+    - query => string
+Descrição: Busca um vídeo baseado na query (title, description, tags)
+Retorno: JSON com resultado da pesquisa.
 
-# Docker para ambiente de prod
-`docker build -t ayga-api -f Dockerfile .` para construir
-`docker run -d -it -p 2300:2300 --name=api ayga-api bundle exec puma -C 'config/puma.rb'` para rodar
-`docker stop ayga-api` para stop
-`docker rm ayga-api` para remover container
+* `/sign_up` e `/sing_in` não possui autenticação de endpoint (JWT), os demais tem que ser redirecionado o `auth_token` que é gerado e retornado no momento do login. Enviar o token no cabeçalho (header) do request baseado no padrão: `Authorization Bearer`.
+
+# Envs
+A configuração básica está baseado em `.env`, por meio de váriveis de ambientes, no caso de development e test o Hanami tem gerenciamento automático baseado na situação do `HANAMI_ENV`.
+Nesses arquivos estão configurações como Banco de dados, JWT secret, Cors, e outros.
+Em caso de produção, é necessário exportar, exemplo: `export CORS_ALLOW_HEADERS="Content-Type Accept Auth-Token"`, assim, as informações ficam na integridade do sistema onde será executado e não em arquivos, é importante ver as boas práticas da hoespedagem/nuvem ou do sistema onde irá rodar em produção. 
 
 # Instalação (caso não use docker)
-`bundle install`
+É necessário instalar todos os pacotes do backend, para isto execute no terminal `bundle install`
 
-# To-do
-## BACKEND
-|x| API com autenteticação dos endpoints por TOKEN
-| | Disponibilizar a listagem de todos os vídeos
-- Extra: Paginação ?page=2
-| | Busca por palavras ou tags
+Também, é necessário fazer a criação e exeução do banco de dados, que está baseado em PostgreSQL.
+Comando: `bundle exec hanami db prepare`
 
-| | Interface web
-|X| CRUD :: Titulo, descrição curtam, imagem de pré visualização, URL do youtube
+Para habilitar o ambiete de teste pasta setar uma varivel de ambiente `HANAMI_ENV=...`
+Comando: `HANAMI_ENV=test bundle exec hanami db prepare`
 
-| | Adicionar Docker
-| | Hasura
-| | Cobertura de código - simplecov
-| | CodeClimate
-| | SemaphoreCI
-| | Overcommit 
+Para executar o servidor do Hanami que está baseado em Puma:
+Comando `bundle exec hanami server` 
+Ele irá executar na porta 2300 no caminho `http://localhost:2300/api`
 
-Adicionado Puma server para produção
-Habilitado http2/early hits
+Existe a opção de executar com Webrick, porém, não recomendo. Use Puma, que já está pré-configurado.
+Comando: `bundle exec hanami server --server=webrick`
 
-`bundle exec hanami server --server=webrick` dev
+# Docker
+Use docker-compose somente em ambiente de desenvolvimento, seguindo as boas práticas de Container.
+
+### Docker para ambiente de development
+Build: `docker build -f Dockerfile.dev .`
+Executar: `docker-compose up` para habilitar
+Parar e remover: `docker-compose down`
+
+### Docker para ambiente de prod
+Gerar o build: `docker build -t ayga-api -f Dockerfile .`
+Executar: `docker run -d -it -p 2300:2300 --name=api ayga-api bundle exec puma -C 'config/puma.rb'`
+Parar o container: `docker stop ayga-api`
+Remover: `docker rm ayga-api`
+
+---
+Explore Hanami [guides](http://hanamirb.org/guides/), [API docs](http://docs.hanamirb.org/1.2.0/), or jump in [chat](http://chat.hanamirb.org) for help. Enjoy! 🌸
