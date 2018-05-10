@@ -10,11 +10,12 @@ module Api::Controllers::Videos
     def call(params)
       # Initialize video
       repo = VideoRepository.new
+      videos = all_for_page(repo.search(params[:query]))
 
       status 200, {
         success: true,
         status_message: 'Results',
-        data: all_for_page(repo.search(params[:query])),
+        data: wrap(videos),
         pagination: {
           next_page: pager.next_page,
           prev_page: pager.prev_page,
@@ -30,6 +31,12 @@ module Api::Controllers::Videos
     # ref: https://github.com/davydovanton/hanami-pagination/blob/master/lib/hanami/pagination/action.rb#L16
     def limit
       10
+    end
+
+    private
+
+    def wrap(collection)
+      collection.map(&:to_h)
     end
   end
 end

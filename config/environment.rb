@@ -8,7 +8,7 @@ require_relative '../apps/api/application'
 require 'argon2'
 
 Hanami.configure do
-  mount Api::Application, at: '/'
+  mount Api::Application, at: '/api'
 
   model do
     ##

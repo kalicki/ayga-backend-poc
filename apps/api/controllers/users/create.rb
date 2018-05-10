@@ -8,13 +8,13 @@ module Api::Controllers::Users
       required(:last_name).filled(:str?)
       required(:email).filled(:str?, format?: FormatsRegex.email)
       required(:encrypted_password).filled(:str?, min_size?: 8).confirmation
+      optional(:admin).maybe(:bool?)
     end
 
     def call(params)
       # Error based in params
       unless params.valid?
-        self.status = 422
-        return self.body = {
+        halt 401, {
           success: false,
           status_message: params.errors
         }.to_json
@@ -25,22 +25,22 @@ module Api::Controllers::Users
 
       # Check user exists via email
       if repository.email_exists?(params[:email])
-        self.status = 422
-        return self.body = {
+        halt 401, {
           success: false,
           status_message: 'User exists'
         }.to_json
       end
 
+      admin = params[:admin] ? params[:admin] : false
       # Create new user
       user = repository.create(
         first_name: params[:first_name],
         last_name: params[:last_name],
         email: params[:email],
-        encrypted_password: Argon2::Password.create(params[:encrypted_password])
+        encrypted_password: Argon2::Password.create(params[:encrypted_password]),
+        admin: admin
       )
-      self.status = 201
-      self.body = {
+      status 201, {
         success: true,
         status_message: 'Added user',
         data: user.infos
