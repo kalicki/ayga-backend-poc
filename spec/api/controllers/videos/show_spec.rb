@@ -1,4 +1,4 @@
-RSpec.describe Api::Controllers::Accounts::Destroy, type: :action do
+RSpec.describe Api::Controllers::Videos::Show, type: :action do
   let(:action) { described_class.new }
   let(:params) { Hash[] }
 
