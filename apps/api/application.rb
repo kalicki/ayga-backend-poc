@@ -1,6 +1,7 @@
 require 'hanami/helpers'
 require 'hanami/assets'
 require_relative './controllers/authentication'
+require_relative './controllers/cors_headers'
 
 module Api
   class Application < Hanami::Application
@@ -261,6 +262,7 @@ module Api
       controller.prepare do
         # include MyAuthentication # included in all the actions
         # before :authenticate!    # run an authentication before callback
+        include Api::CorsHeaders
         include Api::Authentication
       end
 
