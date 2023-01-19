@@ -139,7 +139,7 @@ GEM
     pg (1.0.0)
     powerpack (0.1.1)
     puma (3.11.4)
-    rack (2.0.5)
+    rack (2.2.6.2)
     rainbow (3.0.0)
     rake (12.3.1)
     rom (3.3.3)
